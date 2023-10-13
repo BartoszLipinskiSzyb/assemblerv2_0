@@ -54,8 +54,13 @@ def preprocess(filepath):
             linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"$", " " + references[key], linesCommandsOnly[i])
             linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"\s", " " + references[key] + " ", linesCommandsOnly[i])
 
+    print("Code:")
     for i, line in enumerate(linesCommandsOnly):
         print(f"{i}: {line}")
+    print()
+
+    print("References:")
+    print(references)
     print()
     
     return linesCommandsOnly
@@ -71,8 +76,6 @@ def tokenize(assembly):
             input = [line]
 
         input = re.sub(r"(\sif$)|(\s->$)", "", input[0])
-
-
         
 
         condition = re.findall(r"if.*go", line)
@@ -86,13 +89,29 @@ def tokenize(assembly):
             goto = "0"
         goto = re.sub("(go )", "", goto[0])
 
-        print(f"{i}: {input}, {condition}, {goto}")
-    return None
+        output = re.findall(r"->\s.*\sif", line)
+        if len(output) == 0:
+            output = re.findall(r"->\s.*$", line)
+        if len(output) == 0:
+            output = ["_"]
+
+        output = re.sub(r"(\sif)|(->\s)", "", output[0])
+        output = re.sub(r"\s", "", output).split(",")
+
+        tokenized.append({
+            "i": input,
+            "o": output,
+            "cond": condition,
+            "goto": goto
+        })
+
+    return tokenized
 
 
 def main():
     assembly = preprocess(sys.argv[1])
     tokenized = tokenize(assembly)
+    print(tokenized)
 
 if __name__ == "__main__":
     main()
