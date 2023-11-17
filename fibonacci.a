@@ -1,0 +1,12 @@
+*a = 0
+*b = 1
+
+io DECIMAL_IO = 128
+
+start:
+0 -> *a
+1 -> *b
+
+loop:
+*a + *b -> *a , DECIMAL_IO
+*a + *b -> DECIMAL_IO , *b iftrue go loop

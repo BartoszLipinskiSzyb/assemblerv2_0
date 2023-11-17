@@ -1,5 +1,7 @@
 import sys
+import json
 import re
+
 
 def preprocess(filepath):
     references = {}
@@ -20,7 +22,7 @@ def preprocess(filepath):
             linesStripped.append(lines[i])
 
     # loading definitions
-    linesProgram = []    
+    linesProgram = []
     for i in range(len(linesStripped)):
         if " = " in linesStripped[i]:
             splittedLine = linesStripped[i].split(" = ")
@@ -62,8 +64,9 @@ def preprocess(filepath):
     print("References:")
     print(references)
     print()
-    
+
     return linesCommandsOnly
+
 
 def tokenize(assembly):
     tokenized = []
@@ -76,12 +79,11 @@ def tokenize(assembly):
             input = [line]
 
         input = re.sub(r"(\sif$)|(\s->$)", "", input[0])
-        
 
         condition = re.findall(r"if.*go", line)
         if len(condition) == 0:
             condition = ["false"]
-        condition = re.sub("(if)|(\sgo)", "", condition[0])
+        condition = re.sub("(if)|( go)", "", condition[0])
 
         goto = re.findall(r"go\s\d*$", line)
 
@@ -99,19 +101,48 @@ def tokenize(assembly):
         output = re.sub(r"\s", "", output).split(",")
 
         tokenized.append({
-            "i": input,
-            "o": output,
-            "cond": condition,
+            "in": input,
+            "out": output,
+            "condition": condition,
             "goto": goto
         })
 
     return tokenized
 
 
+def bindigits(n, bits):
+    s = bin(n & int("1"*bits, 2))[2:]
+    return list(map(int, list(("{0:0>%s}" % (bits)).format(s))))
+
+
+memory_layout = json.load(open("../memory/program_memory_layout.json"))
+memory_parts = memory_layout['parts']
+
+
+def to_binary(line):
+    binary = [0 for _ in range(memory_layout["length"])]
+    
+    # setting goto value
+    number_size = memory_parts['goto']['range'][1] - memory_parts['goto']['range'][0]
+    goto_bin = bindigits(int(line['goto']), number_size)
+    if memory_parts['goto']['order'] == "LSB":
+        goto_bin = goto_bin[::-1]
+    for i in range(number_size):
+        binary[i + memory_parts['goto']['range'][0]] = goto_bin[i]
+
+    return binary
+
+
 def main():
     assembly = preprocess(sys.argv[1])
     tokenized = tokenize(assembly)
-    print(tokenized)
+
+    print("\n".join(map(str, tokenized)))
+
+    binary = list(map(to_binary, tokenized))
+
+    print()
+    print("\n".join(map(str, binary)))
 
 if __name__ == "__main__":
     main()
