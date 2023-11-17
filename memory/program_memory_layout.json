@@ -1,0 +1,63 @@
+{
+    "length": 59,
+    "parts": {
+        "operand": {
+            "range": [0, 16],
+            "type": "number",
+            "order": "LSB"
+        },
+        "alu_operation": {
+            "range": [16, 22],
+            "type": "instruction"
+        },
+        "reg_out": {
+            "range": [22, 26],
+            "type": "address",
+            "order": "LSB"
+        },
+        "reg_out_enable": {
+            "range": [26, 27],
+            "type": "instruction"
+        },
+        "reg_a": {
+            "range": [27, 31],
+            "type": "address",
+            "order": "LSB"
+        },
+        "reg_a_enable": {
+            "range": [31, 32],
+            "type": "instruction"
+        },
+        "reg_b": {
+            "range": [32, 36],
+            "type": "address",
+            "order": "LSB"
+        },
+        "reg_b_enable": {
+            "range": [36, 37],
+            "type": "instruction"
+        },
+        "io": {
+            "range": [37, 45],
+            "type": "address",
+            "order": "LSB"
+        },
+        "io_operation": {
+            "range": [45, 49],
+            "type": "instruction"
+        },
+        "halt": {
+            "range": [49, 50],
+            "type": "instruction"
+        },
+        "reset_counter": {
+            "range": [50, 51],
+            "type": "instruction"
+        },
+        "goto": {
+            "range": [51, 59],
+            "type": "address",
+            "order": "MSB"
+        }
+    }
+}

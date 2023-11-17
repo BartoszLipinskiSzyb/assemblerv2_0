@@ -115,7 +115,7 @@ def bindigits(n, bits):
     return list(map(int, list(("{0:0>%s}" % (bits)).format(s))))
 
 
-memory_layout = json.load(open("../memory/program_memory_layout.json"))
+memory_layout = json.load(open("./memory/program_memory_layout.json"))
 memory_parts = memory_layout['parts']
 
 
