@@ -101,8 +101,8 @@ def tokenize(assembly):
         output = re.sub(r"\s", "", output).split(",")
 
         tokenized.append({
-            "in": input,
-            "out": output,
+            "input": input,
+            "output": output,
             "condition": condition,
             "goto": goto
         })
@@ -119,19 +119,109 @@ memory_layout = json.load(open("./memory/program_memory_layout.json"))
 memory_parts = memory_layout['parts']
 
 
-def to_binary(line):
-    binary = [0 for _ in range(memory_layout["length"])]
-    
-    # setting goto value
-    number_size = memory_parts['goto']['range'][1] - memory_parts['goto']['range'][0]
-    goto_bin = bindigits(int(line['goto']), number_size)
-    if memory_parts['goto']['order'] == "LSB":
-        goto_bin = goto_bin[::-1]
+def write_number_to_memory(number, layout_part, binary):
+    number_size = layout_part['range'][1] - layout_part['range'][0]
+    bin = bindigits(int(number), number_size)
+    if layout_part['order'] == "LSB":
+        bin = bin[::-1]
     for i in range(number_size):
-        binary[i + memory_parts['goto']['range'][0]] = goto_bin[i]
+        binary[i + layout_part['range'][0]] = bin[i]
 
     return binary
 
+class bcolors:
+    header = '\033[95m'
+    okblue = '\033[94m'
+    okcyan = '\033[96m'
+    okgreen = '\033[92m'
+    warning = '\033[93m'
+    fail = '\033[91m'
+    endc = '\033[0m'
+    bold = '\033[1m'
+    underline = '\033[4m'
+
+def error_msg(line, msg):
+
+
+    error_line = f"In {line}: {msg}"
+    print()
+    print("~" * len(error_line))
+    print()
+    print(f"{ bcolors.header }in {line}{bcolors.endc}: {bcolors.fail}{msg}{bcolors.endc}")
+    print()
+    print("~" * len(error_line))
+    exit(-1)
+
+
+def to_binary(line):
+    binary = [0 for _ in range(memory_layout["length"])]
+
+    # setting goto value
+    binary = write_number_to_memory(line['goto'], memory_parts['goto'], binary)
+
+    # parsing input
+    input_args = line["input"].split(" ")
+
+    is_operand_set = False
+    is_reg_a_set = False
+    is_reg_b_set = False
+
+
+    operation = None
+    operations = ["+", "-", "&", "|", "^", ">>" "!"]
+    for op in operations:
+        if op in input_args:
+            if operation is None:
+                operation = op
+            else:
+                error_msg(line, "cannot have two operators")
+
+    for input_arg in input_args:
+        if input_arg.isdigit():
+            if is_operand_set:
+                error_msg(line, "cannot have two operands")
+            else:
+                binary = write_number_to_memory(input_arg, memory_parts['operand'], binary)
+                is_operand_set = True
+
+        if "reg." in input_arg:
+            reg = input_arg.replace("reg.", "")
+            if not is_reg_a_set:
+                is_reg_a_set = True
+                binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
+                binary[memory_parts['reg_a_enable']['range'][0]] = 1
+            elif not is_reg_b_set and not is_operand_set:
+                is_reg_b_set = True
+                binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
+                binary[memory_parts['reg_b_enable']['range'][0]] = 1
+            else:
+                error_msg(line, "cannot read from more than two places")
+
+    return binary
+
+def color_binary(line):
+    line = line[::-1]
+
+    def get_current_range(pos):
+        pos = memory_layout['length'] - pos - 1
+        for i, key in enumerate(memory_parts):
+            if pos >= memory_parts[key]['range'][0] and pos < memory_parts[key]['range'][1]:
+                return i % 2 == 1
+
+    result = ""
+    last_was_colored = False
+    for i in range(len(line)):
+        should_color = get_current_range(i)
+        if not last_was_colored and should_color:
+            result += bcolors.okcyan
+            last_was_colored = True
+        elif last_was_colored and not should_color:
+            result += bcolors.endc
+            last_was_colored = False
+
+        result += str(line[i])
+
+    return result + bcolors.endc
 
 def main():
     assembly = preprocess(sys.argv[1])
@@ -142,7 +232,7 @@ def main():
     binary = list(map(to_binary, tokenized))
 
     print()
-    print("\n".join(map(str, binary)))
+    print("\n".join(map(color_binary, binary)))
 
 if __name__ == "__main__":
     main()

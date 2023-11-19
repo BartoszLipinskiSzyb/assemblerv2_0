@@ -1,5 +1,5 @@
 {
-    "length": 59,
+    "length": 63,
     "parts": {
         "operand": {
             "range": [0, 16],
@@ -37,25 +37,30 @@
             "range": [36, 37],
             "type": "instruction"
         },
+        "condition": {
+            "range": [37, 41],
+            "type": "instruction",
+            "bits": ["overflow", "negative", "zero", "enable"]
+        },
         "io": {
-            "range": [37, 45],
+            "range": [41, 49],
             "type": "address",
             "order": "LSB"
         },
         "io_operation": {
-            "range": [45, 49],
+            "range": [49, 53],
             "type": "instruction"
         },
         "halt": {
-            "range": [49, 50],
+            "range": [53, 54],
             "type": "instruction"
         },
         "reset_counter": {
-            "range": [50, 51],
+            "range": [54, 55],
             "type": "instruction"
         },
         "goto": {
-            "range": [51, 59],
+            "range": [55, 63],
             "type": "address",
             "order": "MSB"
         }
