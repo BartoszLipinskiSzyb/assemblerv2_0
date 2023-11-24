@@ -185,17 +185,22 @@ def to_binary(line):
                 is_operand_set = True
 
         if "reg." in input_arg:
+            print(is_operand_set, is_reg_b_set, is_reg_a_set)
             reg = input_arg.replace("reg.", "")
-            if not is_reg_a_set:
-                is_reg_a_set = True
-                binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
-                binary[memory_parts['reg_a_enable']['range'][0]] = 1
-            elif not is_reg_b_set and not is_operand_set:
-                is_reg_b_set = True
-                binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
-                binary[memory_parts['reg_b_enable']['range'][0]] = 1
-            else:
-                error_msg(line, "cannot read from more than two places")
+
+            # przemienne operacje - nieważne jaki bufor będzie użyty
+            if operation in ["+", "&", "|", "^"]:
+                if is_reg_a_set:
+                    if not is_reg_b_set and not is_operand_set:
+                        is_reg_b_set = True
+                        binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
+                        binary[memory_parts['reg_b_enable']['range'][0]] = 1
+                    else:
+                        error_msg(line, "both registers already selected")
+                else:
+                    is_reg_a_set = True
+                    binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
+                    binary[memory_parts['reg_a_enable']['range'][0]] = 1
 
     return binary
 
