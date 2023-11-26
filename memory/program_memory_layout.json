@@ -50,7 +50,7 @@
             "type": "instruction"
         },
         "io": {
-            "range": [43, 50],
+            "range": [42, 50],
             "type": "address",
             "order": "LSB"
         },

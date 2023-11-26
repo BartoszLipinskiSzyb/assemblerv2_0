@@ -1,7 +1,7 @@
 import sys
 import json
 import re
-
+from os import path
 
 def preprocess(filepath):
     references = {}
@@ -339,4 +339,7 @@ def main():
     print("\n".join(map(color_binary, binary)))
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(f"usage: python {path.basename(__file__)} <file input>")
+        exit(-1)
     main()
