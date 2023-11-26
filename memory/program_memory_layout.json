@@ -51,7 +51,9 @@
         },
         "io_operation": {
             "range": [49, 53],
-            "type": "instruction"
+            "type": "instruction",
+            "order": "LSB",
+            "bits": ["r", "w", "", ""]
         },
         "halt": {
             "range": [53, 54],

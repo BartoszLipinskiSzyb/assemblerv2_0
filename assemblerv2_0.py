@@ -50,11 +50,18 @@ def preprocess(filepath):
         else:
             linesCommandsOnly.append(linesProgram[i])
 
+    # replacing uses of references in code with values
     for i in range(len(linesCommandsOnly)):
         for key in references:
             linesCommandsOnly[i] = re.sub(r"^" + re.escape(key) + r"\s", references[key] + " ", linesCommandsOnly[i])
             linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"$", " " + references[key], linesCommandsOnly[i])
             linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"\s", " " + references[key] + " ", linesCommandsOnly[i])
+            linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"\,", " " + references[key] + ",", linesCommandsOnly[i])
+            linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"\s", "," + references[key] + " ", linesCommandsOnly[i])
+            linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"\,", "," + references[key] + ",", linesCommandsOnly[i])
+            linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"\,", "," + references[key] + ",", linesCommandsOnly[i])
+            linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"$", "," + references[key], linesCommandsOnly[i])
+            linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"$", " " + references[key], linesCommandsOnly[i])
 
     print("Code:")
     for i, line in enumerate(linesCommandsOnly):
@@ -166,6 +173,7 @@ def to_binary(line):
     is_reg_a_set = False
     is_reg_b_set = False
 
+    # setting operation
     operation = None
     operation_idx = None
     operations = ["+", "-", "&", "|", "^", ">>", "!"]
@@ -174,27 +182,40 @@ def to_binary(line):
             if operation is None:
                 operation = op
                 operation_idx = input_args.index(op)
-
-                bits = memory_parts['alu_operation']['bits']
-                match operation:
-                    case "|":
-                        binary = write_number_to_memory(0x000000 | (1 << bits.index("&")) | (1 << bits.index("^")), memory_parts['alu_operation'], binary)
-                    case "-":
-                        binary = write_number_to_memory(0x000000 | (1 << bits.index("+")) | (1 << bits.index("carry") | (1 << bits.index("!"))), memory_parts['alu_operation'], binary)
-                    case _:
-                        binary = write_number_to_memory(0x000000 | (1 << bits.index(operation)), memory_parts['alu_operation'], binary)
             else:
                 error_msg(line, "cannot have two operators")
-                exit(-1)
 
+    # setting default operation to let data flow through ALU
+    if operation is None:
+        operation = '^'
+
+    # setting operation bits
+    bits = memory_parts['alu_operation']['bits']
+    # setting default operation as XOR to let data flow through ALU
+
+    match operation:
+        case "|":
+            binary = write_number_to_memory(0x000000 | (1 << bits.index("&")) | (1 << bits.index("^")), memory_parts['alu_operation'], binary)
+        case "-":
+            binary = write_number_to_memory(0x000000 | (1 << bits.index("+")) | (1 << bits.index("carry") | (1 << bits.index("!"))), memory_parts['alu_operation'], binary)
+        case _:
+            binary = write_number_to_memory(0x000000 | (1 << bits.index(operation)), memory_parts['alu_operation'], binary)
+
+    io_operation = None
+    # setting input values and deciding which value should be loaded to a and b. TODO: selecting registers for all operations
     for (i, input_arg) in enumerate(input_args):
         if input_arg.isdigit():
             if is_operand_set:
                 error_msg(line, "cannot have two operands")
-                exit(-1)
             else:
                 binary = write_number_to_memory(input_arg, memory_parts['operand'], binary)
                 is_operand_set = True
+
+        if "io." in input_arg:
+            io = input_arg.replace("io.", "")
+            io_operation = "r"
+
+            binary = write_number_to_memory(io, memory_parts['io'], binary)
 
         if "reg." in input_arg:
             reg = input_arg.replace("reg.", "")
@@ -225,8 +246,36 @@ def to_binary(line):
                         binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
                         binary[memory_parts['reg_b_enable']['range'][0]] = 1
 
+    # setting output register and output IO
+    is_reg_out_set = False
+    for output in line['output']:
+        if "reg." in output:
+            if is_reg_out_set:
+                error_msg(line, "can only have one output register")
+                exit(-1)
 
+            value = output.replace("reg.", "")
+            binary = write_number_to_memory(value, memory_parts['reg_out'], binary)
+            binary[memory_parts['reg_out_enable']['range'][0]] = 1
+            is_reg_out_set = True
 
+        elif "io." in output:
+            if io_operation is not None:
+                error_msg(line, "cannot read and write to IO at the same time and can only use one address")
+                exit(-1)
+
+            io = output.replace("io.", "")
+            io_operation = "w"
+            binary = write_number_to_memory(io, memory_parts['io'], binary)
+
+    # setting io operation
+    if io_operation is not None:
+        bits = memory_parts['io_operation']['bits']
+        binary = write_number_to_memory(0x0000 | (1 << bits.index(io_operation)), memory_parts['io_operation'], binary)
+
+    if (is_reg_b_set or is_operand_set) and is_reg_a_set and operation_idx is None:
+        error_msg(line, "cannot combine two values without operator")
+    
     return binary
 
 def color_binary(line):

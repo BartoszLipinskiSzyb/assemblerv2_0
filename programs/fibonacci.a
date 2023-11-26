@@ -1,5 +1,5 @@
-*a = 5
-*b = 12
+*a = 0
+*b = 1
 
 io DECIMAL_IO = 128
 
@@ -8,7 +8,5 @@ start:
 1 -> *b
 
 loop:
-*a + *b -> *a , DECIMAL_IO
-*a + *b -> DECIMAL_IO , *b iftrue go loop
-
-! *b -> *b
+*a + *b -> *a,DECIMAL_IO
+*a + *b -> DECIMAL_IO,*b iftrue go loop
