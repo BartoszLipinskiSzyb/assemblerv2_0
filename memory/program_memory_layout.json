@@ -8,7 +8,9 @@
         },
         "alu_operation": {
             "range": [16, 22],
-            "type": "instruction"
+            "type": "instruction",
+            "bits": ["carry", "&", "^", "!", ">>", "+"],
+            "order": "LSB"
         },
         "reg_out": {
             "range": [22, 26],

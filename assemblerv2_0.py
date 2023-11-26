@@ -166,26 +166,37 @@ def to_binary(line):
     is_reg_a_set = False
     is_reg_b_set = False
 
-
     operation = None
-    operations = ["+", "-", "&", "|", "^", ">>" "!"]
+    operation_idx = None
+    operations = ["+", "-", "&", "|", "^", ">>", "!"]
     for op in operations:
         if op in input_args:
             if operation is None:
                 operation = op
+                operation_idx = input_args.index(op)
+
+                bits = memory_parts['alu_operation']['bits']
+                match operation:
+                    case "|":
+                        binary = write_number_to_memory(0x000000 | (1 << bits.index("&")) | (1 << bits.index("^")), memory_parts['alu_operation'], binary)
+                    case "-":
+                        binary = write_number_to_memory(0x000000 | (1 << bits.index("+")) | (1 << bits.index("carry") | (1 << bits.index("!"))), memory_parts['alu_operation'], binary)
+                    case _:
+                        binary = write_number_to_memory(0x000000 | (1 << bits.index(operation)), memory_parts['alu_operation'], binary)
             else:
                 error_msg(line, "cannot have two operators")
+                exit(-1)
 
-    for input_arg in input_args:
+    for (i, input_arg) in enumerate(input_args):
         if input_arg.isdigit():
             if is_operand_set:
                 error_msg(line, "cannot have two operands")
+                exit(-1)
             else:
                 binary = write_number_to_memory(input_arg, memory_parts['operand'], binary)
                 is_operand_set = True
 
         if "reg." in input_arg:
-            print(is_operand_set, is_reg_b_set, is_reg_a_set)
             reg = input_arg.replace("reg.", "")
 
             # przemienne operacje - nieważne jaki bufor będzie użyty
@@ -197,10 +208,24 @@ def to_binary(line):
                         binary[memory_parts['reg_b_enable']['range'][0]] = 1
                     else:
                         error_msg(line, "both registers already selected")
+                        exit(-1)
                 else:
                     is_reg_a_set = True
                     binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
                     binary[memory_parts['reg_a_enable']['range'][0]] = 1
+
+            # tylko na rejestrze b lub operandzie
+            if operation in ['!']:
+                if i - 1 == operation_idx:
+                    if is_reg_b_set or is_operand_set:
+                        error_msg(line, "NOT operation can only be used with one value")
+                        exit(-1)
+                    else:
+                        is_reg_b_set = True
+                        binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
+                        binary[memory_parts['reg_b_enable']['range'][0]] = 1
+
+
 
     return binary
 

@@ -10,3 +10,5 @@ start:
 loop:
 *a + *b -> *a , DECIMAL_IO
 *a + *b -> DECIMAL_IO , *b iftrue go loop
+
+! *b -> *b
