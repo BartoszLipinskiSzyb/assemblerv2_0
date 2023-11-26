@@ -14,6 +14,9 @@ def preprocess(filepath):
         print(f"File {filepath} not found")
         sys.exit(-1)
 
+    # removing trailing spaces
+    lines = list(map(lambda line: line.strip(), lines))
+
     # removing empty lines and comments
     linesStripped = []
     for i in range(len(lines)):
@@ -149,7 +152,6 @@ class bcolors:
 
 def error_msg(line, msg):
 
-
     error_line = f"In {line}: {msg}"
     print()
     print("~" * len(error_line))
@@ -261,7 +263,7 @@ def to_binary(line):
 
         elif "io." in output:
             if io_operation is not None:
-                error_msg(line, "cannot read and write to IO at the same time and can only use one address")
+                error_msg(line, "cannot read and write to IO at the same time and can only use one IO address")
                 exit(-1)
 
             io = output.replace("io.", "")
@@ -275,7 +277,30 @@ def to_binary(line):
 
     if (is_reg_b_set or is_operand_set) and is_reg_a_set and operation_idx is None:
         error_msg(line, "cannot combine two values without operator")
-    
+
+    condition_combinations = {
+        'true': [],
+        '0': ["zero"],
+        'overflow': ["overflow"],
+        '-': ["negative"],
+        '!-': ["negative", "not"],
+        "!0": ["zero", "not"],
+        "!overflow": ["overflow", "not"]
+    }
+    # setting condition
+    condition = line['condition']
+    if condition != "false":
+        binary[memory_parts['condition_enable']['range'][0]] = 1
+        if condition not in condition_combinations.keys():
+            error_msg(line, "not a valid condition")
+
+        combination = condition_combinations.get(condition)
+        result_condition = 0x0000
+        bits = memory_parts['condition']['bits']
+        for bit in combination:
+            result_condition |= 1 << bits.index(bit)
+        binary = write_number_to_memory(result_condition, memory_parts['condition'], binary)
+
     return binary
 
 def color_binary(line):
