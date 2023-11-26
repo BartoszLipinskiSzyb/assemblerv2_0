@@ -20,7 +20,8 @@ reg.2 -> reg.3, TEST
 // reg.0 reg.1 -> reg.2
                         // test comment
 loop:
-    _ iftrue go loop
+    go loop
 
 TEST -> reg.0
-reg.1 -> TEST
+reg.1 -> TEST iftrue go loop
+if!- go loop

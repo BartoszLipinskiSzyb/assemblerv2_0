@@ -92,7 +92,7 @@ def tokenize(assembly):
 
         condition = re.findall(r"if.*go", line)
         if len(condition) == 0:
-            condition = ["false"]
+            condition = ["null"]
         condition = re.sub("(if)|( go)", "", condition[0])
 
         goto = re.findall(r"go\s\d*$", line)
@@ -289,6 +289,15 @@ def to_binary(line):
     }
     # setting condition
     condition = line['condition']
+
+    # special case for when line looks something like
+    # go 42
+    # TODO: when line looks something like above, make input empty. Currently input will be go 42. It sets operand and it shouldn't
+    if condition == "null" and " go " in line:
+        condition = "true"
+    elif condition == "null":
+        condition = "false"
+
     if condition != "false":
         binary[memory_parts['condition_enable']['range'][0]] = 1
         if condition not in condition_combinations.keys():
