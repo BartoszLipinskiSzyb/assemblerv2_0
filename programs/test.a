@@ -25,3 +25,8 @@ loop:
 TEST -> reg.0
 reg.1 -> TEST iftrue go loop
 if!- go loop
+
+reg.0 - reg.1 -> reg.0
+reg.1 - reg.0 -> reg.0
+// error
+// reg.1 >> reg.0 -> reg.1

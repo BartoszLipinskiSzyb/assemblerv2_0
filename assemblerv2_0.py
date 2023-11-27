@@ -11,7 +11,7 @@ def preprocess(filepath):
         with open(filepath, "r") as f:
             lines = f.readlines()
     except FileNotFoundError:
-        print(f"File {filepath} not found")
+        # print(f"File {filepath} not found")
         sys.exit(-1)
 
     # removing trailing spaces
@@ -66,14 +66,14 @@ def preprocess(filepath):
             linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"$", "," + references[key], linesCommandsOnly[i])
             linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"$", " " + references[key], linesCommandsOnly[i])
 
-    print("Code:")
-    for i, line in enumerate(linesCommandsOnly):
-        print(f"{i}: {line}")
-    print()
+    # print("Code:")
+    # for i, line in enumerate(linesCommandsOnly):
+        # print(f"{i}: {line}")
+    # print()
 
-    print("References:")
-    print(references)
-    print()
+    # print("References:")
+    # print(references)
+    # print()
 
     return linesCommandsOnly
 
@@ -82,13 +82,17 @@ def tokenize(assembly):
     tokenized = []
 
     for i, line in enumerate(assembly):
-        input = re.findall(r"^.*->", line)
-        if len(input) == 0:
-            input = re.findall(r"^.*if", line)
-        if len(input) == 0:
-            input = [line]
+        if "->" in line:
 
-        input = re.sub(r"(\sif$)|(\s->$)", "", input[0])
+            input = re.findall(r"^.*->", line)
+            if len(input) == 0:
+                input = re.findall(r"^.*if", line)
+            if len(input) == 0:
+                input = [line]
+
+            input = re.sub(r"(\sif$)|(\s->$)", "", input[0])
+        else:
+            input = "_"
 
         condition = re.findall(r"if.*go", line)
         if len(condition) == 0:
@@ -153,12 +157,12 @@ class bcolors:
 def error_msg(line, msg):
 
     error_line = f"In {line}: {msg}"
-    print()
-    print("~" * len(error_line))
-    print()
-    print(f"{ bcolors.header }in {line}{bcolors.endc}: {bcolors.fail}{msg}{bcolors.endc}")
-    print()
-    print("~" * len(error_line))
+    # print()
+    # print("~" * len(error_line))
+    # print()
+    # print(f"{ bcolors.header }in {line}{bcolors.endc}: {bcolors.fail}{msg}{bcolors.endc}")
+    # print()
+    # print("~" * len(error_line))
     exit(-1)
 
 
@@ -238,7 +242,7 @@ def to_binary(line):
                     binary[memory_parts['reg_a_enable']['range'][0]] = 1
 
             # tylko na rejestrze b lub operandzie
-            if operation in ['!']:
+            elif operation in ['!']:
                 if i - 1 == operation_idx:
                     if is_reg_b_set or is_operand_set:
                         error_msg(line, "NOT operation can only be used with one value")
@@ -247,6 +251,29 @@ def to_binary(line):
                         is_reg_b_set = True
                         binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
                         binary[memory_parts['reg_b_enable']['range'][0]] = 1
+
+            elif operation in ['-']:
+                if i < operation_idx:
+                    if is_reg_a_set:
+                        error_msg(line, "register A cannot load two values at the same time")
+                    else:
+                        is_reg_a_set = True
+                        binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
+                        binary[memory_parts['reg_a_enable']['range'][0]] = 1
+                else:
+                    if is_reg_b_set:
+                        error_msg(line, "register B cannot load two values at the same time")
+                    else:
+                        is_reg_b_set = True
+                        binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
+                        binary[memory_parts['reg_b_enable']['range'][0]] = 1
+
+            elif operation in ['>>']:
+                if is_reg_a_set:
+                    error_msg(line, "with right bitshift computer can only load to A register")
+                is_reg_a_set = True
+                binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
+                binary[memory_parts['reg_a_enable']['range'][0]] = 1
 
     # setting output register and output IO
     is_reg_out_set = False
@@ -336,6 +363,27 @@ def color_binary(line):
 
     return result + bcolors.endc
 
+position_config = json.load(open("./memory/world_position_config.json"))
+def to_points_in_world(binary):
+    zero_point = position_config["zero_point"]
+    points = []
+    for (line_idx, line) in enumerate(binary):
+        for (digit_idx, digit) in enumerate(line):
+            if digit == 1:
+                points.append([zero_point[0] + (digit_idx * 2), zero_point[1] + ((line_idx % position_config["memory_dimensions"]["length"]) * 2), zero_point[2] + (line_idx // position_config["memory_dimensions"]["length"]) * 2])
+
+    return points
+
+commands = json.load(open("./memory/minecraft_commands.json"))
+def to_minecraft_command(points):
+    command = commands["start"]
+    for point in points:
+        command += "{id:command_block_minecart,Command:'setblock " + str(point[0]) + " " + str(point[1]) + " " + str(point[2]) + " dirt" + position_config["facing"] + "]'},"
+    
+    command += "{id:command_block_minecart,Command:'setblock ~ ~1 ~ command_block{auto:1,Command:\"fill ~ ~ ~ ~ ~-2 ~ air\"}'},{id:command_block_minecart,Command:'kill @e[type=command_block_minecart,distance=..1]'}]}]}]}"
+    return command
+
+
 def main():
     assembly = preprocess(sys.argv[1])
     tokenized = tokenize(assembly)
@@ -347,8 +395,19 @@ def main():
     print()
     print("\n".join(map(color_binary, binary)))
 
+    points_in_world = to_points_in_world(binary)
+
+    print()
+    print(points_in_world)
+
+    minecraft_command = to_minecraft_command(points_in_world)
+
+    print()
+    print(minecraft_command)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(f"usage: python {path.basename(__file__)} <file input>")
+        # print(f"usage: python {path.basename(__file__)} <file input>")
         exit(-1)
     main()
