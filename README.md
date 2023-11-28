@@ -3,7 +3,7 @@
 ### Minecraft version: 1.15.2
 ### Python version: 3.11
 
-## Instalation
+## Installation
 
 Unzip file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
 
@@ -15,7 +15,7 @@ $ python assemblerv2_0.py <input_file>
 
 Linux/MacOS
 
-$ python3 assemblerv2_0 <input_file>
+$ python3 assemblerv2_0.py <input_file>
 
 ## Loading compiled code into minecraft world
 
