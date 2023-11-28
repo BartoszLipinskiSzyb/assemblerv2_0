@@ -197,4 +197,4 @@ Conditions are used to test result of operation in different ways
 
 ## Examples
 
-For example programs, check out ./programs/ directory
+For example programs, check out ./programs/ directory. They are already loaded into the world.
