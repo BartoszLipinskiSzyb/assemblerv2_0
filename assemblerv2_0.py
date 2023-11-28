@@ -386,27 +386,26 @@ def to_minecraft_command(points):
 def main():
     assembly = preprocess(sys.argv[1])
     tokenized = tokenize(assembly)
-
-    print("\n".join(map(str, tokenized)))
-
     binary = list(map(to_binary, tokenized))
-
-    print()
-    print("\n".join(map(color_binary, binary)))
-
     points_in_world = to_points_in_world(binary)
-
-    print()
-    print(points_in_world)
-
     minecraft_command = to_minecraft_command(points_in_world)
 
-    print()
+    if "-v" in sys.argv:
+        print("\n".join(map(str, tokenized)))
+        print()
+        print("\n".join(map(color_binary, binary)))
+        print()
+        print(points_in_world)
+        print()
+
     print(minecraft_command)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        # print(f"usage: python {path.basename(__file__)} <file input>")
+        print(f"usage: python {path.basename(__file__)} <file input> -v")
+        print()
+        print("options:")
+        print("-v - verbose mode, show more information")
         exit(-1)
     main()
