@@ -309,7 +309,7 @@ def to_binary(line):
         error_msg(line, "cannot combine two values without operator")
 
     condition_combinations = {
-        'true': [],
+        'true': ["not"],
         '0': ["zero"],
         'overflow': ["overflow"],
         '-': ["negative"],
@@ -325,7 +325,9 @@ def to_binary(line):
     # TODO: when line looks something like above, make input empty. Currently input will be go 42. It sets operand and it shouldn't
 
     if condition != "false":
-        binary[memory_parts['condition_enable']['range'][0]] = 1
+        if condition != "true":
+            binary[memory_parts['condition_enable']['range'][0]] = 1
+
         if condition not in condition_combinations.keys():
             error_msg(line, "not a valid condition")
 
@@ -375,11 +377,15 @@ def to_points_in_world(binary):
 
 commands = json.load(open("./memory/minecraft_commands.json"))
 def to_minecraft_command(points):
+    zero_point = position_config["zero_point"]
     command = commands["start"]
+    # cleaning all redstone torches
+    command += "{id:command_block_minecart,Command:'fill " + str(zero_point[0]) + " " + str(zero_point[1]) + " " + str(zero_point[2]) + " " + str(zero_point[0] + (position_config["memory_dimensions"]["length"] - 1) * 2) + " " + str(zero_point[1] - (position_config["memory_dimensions"]["height"] - 1) * 2) + " " + str(zero_point[2] + (position_config["memory_dimensions"]["width"] - 1) * 2) + " air replace redstone_wall_torch'},"
+
     for point in points:
         command += "{id:command_block_minecart,Command:'setblock " + str(point[0]) + " " + str(point[1]) + " " + str(point[2]) + " redstone_wall_torch[facing=" + position_config["facing"] + "]'},"
     
-    command += "{id:command_block_minecart,Command:'setblock ~ ~1 ~ command_block{auto:1,Command:\"fill ~ ~ ~ ~ ~-2 ~ air\"}'},{id:command_block_minecart,Command:'kill @e[type=command_block_minecart,distance=..1]'}]}]}]}"
+    command += commands["end"]
     return command
 
 
