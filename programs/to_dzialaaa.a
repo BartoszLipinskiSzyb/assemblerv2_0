@@ -1,0 +1,9 @@
+io DECIMAL = 128
+
+*liczba = 5
+dodawanie = 7
+
+dodawanie -> *liczba
+
+loop:
+    *liczba + dodawanie -> *liczba, DECIMAL iftrue go loop

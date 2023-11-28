@@ -1,0 +1,12 @@
+io DECIMAL = 128
+
+start_value = 4096
+*value = 0
+
+start:
+start_value -> *value
+
+loop:
+*value >> -> *value, DECIMAL if!0 go loop
+
+go start

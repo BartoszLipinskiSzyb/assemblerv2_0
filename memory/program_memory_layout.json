@@ -1,5 +1,5 @@
 {
-    "length": 64,
+    "length": 66,
     "parts": {
         "operand": {
             "range": [0, 16],
@@ -9,7 +9,7 @@
         "alu_operation": {
             "range": [16, 22],
             "type": "instruction",
-            "bits": ["carry", "&", "^", "!", ">>", "+"],
+            "bits": ["carry", "!", "+", "^", "&", ">>"],
             "order": "LSB"
         },
         "reg_out": {
@@ -61,15 +61,15 @@
             "bits": ["r", "w", "", ""]
         },
         "halt": {
-            "range": [54, 55],
+            "range": [56, 57],
             "type": "instruction"
         },
         "reset_counter": {
-            "range": [55, 56],
+            "range": [57, 58],
             "type": "instruction"
         },
         "goto": {
-            "range": [56, 64],
+            "range": [58, 66],
             "type": "address",
             "order": "MSB"
         }

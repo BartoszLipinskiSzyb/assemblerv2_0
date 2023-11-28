@@ -1,7 +1,7 @@
 {
-    "zero_point": [4, 120, 1],
+    "zero_point": [54, 94, -40],
     "memory_dimensions": {
-        "width": 64,
+        "width": 66,
         "length": 16,
         "height": 4
     },

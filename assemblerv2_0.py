@@ -96,7 +96,10 @@ def tokenize(assembly):
 
         condition = re.findall(r"if.*go", line)
         if len(condition) == 0:
-            condition = ["null"]
+            if "go " in line:
+                condition = ["true"]
+            else:
+                condition = ["false"]
         condition = re.sub("(if)|( go)", "", condition[0])
 
         goto = re.findall(r"go\s\d*$", line)
@@ -320,10 +323,6 @@ def to_binary(line):
     # special case for when line looks something like
     # go 42
     # TODO: when line looks something like above, make input empty. Currently input will be go 42. It sets operand and it shouldn't
-    if condition == "null" and " go " in line:
-        condition = "true"
-    elif condition == "null":
-        condition = "false"
 
     if condition != "false":
         binary[memory_parts['condition_enable']['range'][0]] = 1
@@ -370,7 +369,7 @@ def to_points_in_world(binary):
     for (line_idx, line) in enumerate(binary):
         for (digit_idx, digit) in enumerate(line):
             if digit == 1:
-                points.append([zero_point[0] + (digit_idx * 2), zero_point[1] + ((line_idx % position_config["memory_dimensions"]["length"]) * 2), zero_point[2] + (line_idx // position_config["memory_dimensions"]["length"]) * 2])
+                points.append([zero_point[0] + ((line_idx % position_config["memory_dimensions"]["length"]) * 2),  zero_point[1] - (line_idx // position_config["memory_dimensions"]["length"]) * 2, zero_point[2] + (digit_idx * 2)])
 
     return points
 
@@ -378,7 +377,7 @@ commands = json.load(open("./memory/minecraft_commands.json"))
 def to_minecraft_command(points):
     command = commands["start"]
     for point in points:
-        command += "{id:command_block_minecart,Command:'setblock " + str(point[0]) + " " + str(point[1]) + " " + str(point[2]) + " dirt" + position_config["facing"] + "]'},"
+        command += "{id:command_block_minecart,Command:'setblock " + str(point[0]) + " " + str(point[1]) + " " + str(point[2]) + " redstone_wall_torch[facing=" + position_config["facing"] + "]'},"
     
     command += "{id:command_block_minecart,Command:'setblock ~ ~1 ~ command_block{auto:1,Command:\"fill ~ ~ ~ ~ ~-2 ~ air\"}'},{id:command_block_minecart,Command:'kill @e[type=command_block_minecart,distance=..1]'}]}]}]}"
     return command
