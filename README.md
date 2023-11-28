@@ -152,7 +152,7 @@ reg.5 | reg.12 -> io.128
 Example line of code that checks if register 7 is equal to register 8 by XORing and checking if result is 0. If result is 0 it jumps to instruction 0
 
 ```
-reg.7 ^ reg.8 if0 go 0
+reg.7 ^ reg.8 -> _ if0 go 0
 ```
 
 ### Operators
