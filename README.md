@@ -34,7 +34,7 @@ If you don't have one, obtain command_block by typing into minecraft console
 $ /give @p minecraft:command_block
 ```
 
-Place the command block anywhere in the world, and paste into it command that assemblerv2_0.py script created. Then power the command block with any redstone signal
+Place the command block anywhere in the world so that 3x3 block cube above the block is air, and paste into it command that assemblerv2_0.py script created. Then power the command block with any redstone signal
 
 ## Assembly syntax
 
