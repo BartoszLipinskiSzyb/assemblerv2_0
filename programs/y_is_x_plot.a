@@ -1,0 +1,21 @@
+io DISP_X = 32
+io DISP_Y = 33
+io DISP_DATA = 34
+
+CLEAR_SCREEN = 2
+PIXEL_ON = 1
+PIXEL_OFF = 0
+
+*current_value = 0
+
+start:
+0 -> *current_value
+CLEAR_SCREEN -> DISP_DATA
+
+loop:
+*current_value -> DISP_X
+*current_value -> DISP_Y
+
+PIXEL_ON -> DISP_DATA
+
+*current_value + 1 -> *current_value iftrue go loop

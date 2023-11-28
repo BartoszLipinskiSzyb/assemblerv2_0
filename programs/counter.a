@@ -1,0 +1,7 @@
+io DECIMAL = 128
+*value = 15
+
+0 -> *value
+
+loop:
+    *value + 1 -> *value, DECIMAL iftrue go loop

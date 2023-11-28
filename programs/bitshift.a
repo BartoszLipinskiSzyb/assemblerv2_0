@@ -1,10 +1,10 @@
 io DECIMAL = 128
 
-start_value = 4096
+start_value = 2137
 *value = 0
 
 start:
-start_value -> *value
+start_value -> *value, DECIMAL
 
 loop:
 *value >> -> *value, DECIMAL if!0 go loop
