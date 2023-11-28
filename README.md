@@ -10,7 +10,7 @@ Clone the repository with git
 git clone https://github.com/BartoszLipinskiSzyb/assemblerv2_0
 ```
 
-Unzip file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
+Extract file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
 
 ## Running the assembler
 
