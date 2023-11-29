@@ -7,7 +7,7 @@
 
 Clone the repository with git
 ```
-git clone https://github.com/BartoszLipinskiSzyb/assemblerv2_0
+$ git clone https://github.com/BartoszLipinskiSzyb/assemblerv2_0
 ```
 
 Extract file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
