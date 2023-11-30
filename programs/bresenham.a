@@ -56,7 +56,7 @@ loopX:
     *D + *temp -> *D
 
 // check if drawing is complete
-*x + 1 -> *x
+*x0 + 1 -> *x0
 *x1 - *x0 -> _ if!- go loopX
 
 halt:
