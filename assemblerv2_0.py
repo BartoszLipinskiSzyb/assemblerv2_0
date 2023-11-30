@@ -384,7 +384,7 @@ def to_minecraft_command(points):
 
     for point in points:
         command += "{id:command_block_minecart,Command:'setblock " + str(point[0]) + " " + str(point[1]) + " " + str(point[2]) + " redstone_wall_torch[facing=" + position_config["facing"] + "]'},"
-    
+
     command += commands["end"]
     return command
 

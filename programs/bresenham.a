@@ -1,0 +1,62 @@
+// decimal display definition
+io DECIMAL = 128
+
+// pixel display definitions
+io DISP_X = 32
+io DISP_Y = 33
+io DISP_DATA = 34
+CLEAR_SCREEN = 2
+PIXEL_ON = 1
+PIXEL_OFF = 0
+
+// variable definitions
+*dx = 0
+*dy = 1
+*D = 2
+
+*x0 = 3
+*y0 = 4
+*x1 = 5
+*y1 = 6
+
+*temp = 7
+
+start:
+// reading input from user
+DECIMAL -> *x0
+DECIMAL -> *y0
+DECIMAL -> *x1
+DECIMAL -> *y1
+
+// resetting display
+CLEAR_SCREEN -> DISP_DATA
+
+plotLine:
+*x1 - *x0 -> *dx
+*y1 -*y0 -> *dy
+
+*dy + *dy -> *temp
+*temp - *dx -> *D
+
+loopX:
+	// plot
+	*x0 -> DISP_X
+	*y0 -> DISP_Y
+	PIXEL_ON -> DISP_DATA
+	
+	0 - *D -> _ if!- go skipif
+	
+	    *y0 + 1 -> *y0
+	    *dx + *dx -> *temp
+	    *D - *temp -> *D
+	
+	skipif:
+
+    *dy + *dy -> *temp
+    *D + *temp -> *D
+
+// check if drawing is complete
+*x1 ^ *x0 -> _ if!0 go loopX
+
+halt:
+    go halt
