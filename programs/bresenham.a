@@ -33,7 +33,7 @@ CLEAR_SCREEN -> DISP_DATA
 
 plotLine:
 *x1 - *x0 -> *dx
-*y1 -*y0 -> *dy
+*y1 - *y0 -> *dy
 
 *dy + *dy -> *temp
 *temp - *dx -> *D
