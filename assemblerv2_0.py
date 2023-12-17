@@ -11,7 +11,7 @@ def preprocess(filepath):
         with open(filepath, "r") as f:
             lines = f.readlines()
     except FileNotFoundError:
-        # print(f"File {filepath} not found")
+        print(f"File {filepath} not found")
         sys.exit(-1)
 
     # removing trailing spaces
@@ -62,9 +62,7 @@ def preprocess(filepath):
             linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"\,", " " + references[key] + ",", linesCommandsOnly[i])
             linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"\s", "," + references[key] + " ", linesCommandsOnly[i])
             linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"\,", "," + references[key] + ",", linesCommandsOnly[i])
-            linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"\,", "," + references[key] + ",", linesCommandsOnly[i])
             linesCommandsOnly[i] = re.sub(r"\," + re.escape(key) + r"$", "," + references[key], linesCommandsOnly[i])
-            linesCommandsOnly[i] = re.sub(r"\s" + re.escape(key) + r"$", " " + references[key], linesCommandsOnly[i])
 
     # print("Code:")
     # for i, line in enumerate(linesCommandsOnly):
@@ -160,12 +158,12 @@ class bcolors:
 def error_msg(line, msg):
 
     error_line = f"In {line}: {msg}"
-    # print()
-    # print("~" * len(error_line))
-    # print()
-    # print(f"{ bcolors.header }in {line}{bcolors.endc}: {bcolors.fail}{msg}{bcolors.endc}")
-    # print()
-    # print("~" * len(error_line))
+    print()
+    print("~" * len(error_line))
+    print()
+    print(f"{ bcolors.header }in {line}{bcolors.endc}: {bcolors.fail}{msg}{bcolors.endc}")
+    print()
+    print("~" * len(error_line))
     exit(-1)
 
 
@@ -320,10 +318,6 @@ def to_binary(line):
     # setting condition
     condition = line['condition']
 
-    # special case for when line looks something like
-    # go 42
-    # TODO: when line looks something like above, make input empty. Currently input will be go 42. It sets operand and it shouldn't
-
     if condition != "false":
         if condition != "true":
             binary[memory_parts['condition_enable']['range'][0]] = 1
@@ -397,6 +391,8 @@ def main():
     minecraft_command = to_minecraft_command(points_in_world)
 
     if "-v" in sys.argv:
+        print("\n".join(assembly))
+        print()
         print("\n".join(map(str, tokenized)))
         print()
         print("\n".join(map(color_binary, binary)))
