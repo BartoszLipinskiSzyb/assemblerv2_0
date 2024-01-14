@@ -50,13 +50,14 @@ loopX:
 	    *dx + *dx -> *temp
 	    *D - *temp -> *D
 	
-	skipif:
+    skipif:
 
     *dy + *dy -> *temp
     *D + *temp -> *D
 
 // check if drawing is complete
-*x1 ^ *x0 -> _ if!0 go loopX
+*x0 + 1 -> *x0
+*x1 - *x0 -> _ if!- go loopX
 
 halt:
     go halt

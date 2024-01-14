@@ -2,6 +2,10 @@ import sys
 import json
 import re
 from os import path
+import linter
+
+def check_linting(file):
+    return linter.lint_file(file)
 
 def preprocess(filepath):
     references = {}
@@ -365,7 +369,7 @@ def to_points_in_world(binary):
     for (line_idx, line) in enumerate(binary):
         for (digit_idx, digit) in enumerate(line):
             if digit == 1:
-                points.append([zero_point[0] + ((line_idx % position_config["memory_dimensions"]["length"]) * 2),  zero_point[1] - (line_idx // position_config["memory_dimensions"]["length"]) * 2, zero_point[2] + (digit_idx * 2)])
+                points.append([zero_point[0] + ((line_idx % position_config["memory_dimensions"]["length"]) * 2),  zero_point[1] - (line_idx // position_config["memory_dimensions"]["length"]) * 4, zero_point[2] + (digit_idx * 2)])
 
     return points
 
@@ -384,6 +388,14 @@ def to_minecraft_command(points):
 
 
 def main():
+    lint_errors = linter.lint_file(sys.argv[1])
+
+    if not len(lint_errors) == 0:
+        for i, line in enumerate(open(sys.argv[1]).readlines()):
+            if lint_errors.__contains__(i):
+                print("Line " + str(i + 1) + " : " + line.strip("\n") + " : bad syntax")
+        exit(-1)
+
     assembly = preprocess(sys.argv[1])
     tokenized = tokenize(assembly)
     binary = list(map(to_binary, tokenized))
