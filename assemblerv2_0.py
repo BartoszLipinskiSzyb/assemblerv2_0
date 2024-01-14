@@ -369,7 +369,7 @@ def to_points_in_world(binary):
     for (line_idx, line) in enumerate(binary):
         for (digit_idx, digit) in enumerate(line):
             if digit == 1:
-                points.append([zero_point[0] + ((line_idx % position_config["memory_dimensions"]["length"]) * 2),  zero_point[1] - (line_idx // position_config["memory_dimensions"]["length"]) * 2, zero_point[2] + (digit_idx * 2)])
+                points.append([zero_point[0] + ((line_idx % position_config["memory_dimensions"]["length"]) * 2),  zero_point[1] - (line_idx // position_config["memory_dimensions"]["length"]) * 4, zero_point[2] + (digit_idx * 2)])
 
     return points
 
