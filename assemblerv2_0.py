@@ -180,7 +180,6 @@ def to_binary(line):
 
     # parsing input
     input_args = line["input"].split(" ")
-    print(input_args)
 
     is_operand_set = False
     is_reg_a_set = False
