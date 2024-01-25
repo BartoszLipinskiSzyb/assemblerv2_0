@@ -120,6 +120,7 @@ def tokenize(assembly):
         output = re.sub(r"\s", "", output).split(",")
 
         tokenized.append({
+            "line": line,
             "input": input,
             "output": output,
             "condition": condition,
@@ -179,6 +180,7 @@ def to_binary(line):
 
     # parsing input
     input_args = line["input"].split(" ")
+    print(input_args)
 
     is_operand_set = False
     is_reg_a_set = False
@@ -222,13 +224,13 @@ def to_binary(line):
                 binary = write_number_to_memory(input_arg, memory_parts['operand'], binary)
                 is_operand_set = True
 
-        if "io." in input_arg:
+        elif "io." in input_arg:
             io = input_arg.replace("io.", "")
             io_operation = "r"
 
             binary = write_number_to_memory(io, memory_parts['io'], binary)
 
-        if "reg." in input_arg:
+        elif "reg." in input_arg:
             reg = input_arg.replace("reg.", "")
 
             # przemienne operacje - nieważne jaki bufor będzie użyty
@@ -279,6 +281,9 @@ def to_binary(line):
                 is_reg_a_set = True
                 binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
                 binary[memory_parts['reg_a_enable']['range'][0]] = 1
+
+        elif not (input_arg in operations or input_arg == '_'):
+            error_msg(line["line"], "undefined variable: " + input_arg)
 
     # setting output register and output IO
     is_reg_out_set = False
@@ -391,9 +396,8 @@ def main():
     lint_errors = linter.lint_file(sys.argv[1])
 
     if not len(lint_errors) == 0:
-        for i, line in enumerate(open(sys.argv[1]).readlines()):
-            if lint_errors.__contains__(i):
-                print("Line " + str(i + 1) + " : " + line.strip("\n") + " : bad syntax")
+        for i, line in lint_errors:
+            print("Line " + str(i + 1) + " : \n" + line.strip("\n") + "\n : bad syntax\n")
         exit(-1)
 
     assembly = preprocess(sys.argv[1])
