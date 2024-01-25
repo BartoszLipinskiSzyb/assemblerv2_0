@@ -16,7 +16,7 @@ def lint_file(path):
 
     for l_num, line in enumerate(file_contents):
         if not verify_line(line):
-            errors.append(l_num)
+            errors.append([l_num, line])
 
     return errors
 
