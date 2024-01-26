@@ -6,8 +6,8 @@
 ## Installation
 
 Clone the repository with git
-```
-$ git clone https://github.com/BartoszLipinskiSzyb/assemblerv2_0
+```bash
+git clone https://github.com/BartoszLipinskiSzyb/assemblerv2_0
 ```
 
 Extract file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
@@ -16,22 +16,22 @@ Extract file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
 
 Windows
 
-```
-$ python assemblerv2_0.py <input_file>
+```bash
+python assemblerv2_0.py <input_file>
 ```
 
 Linux/MacOS
 
-```
-$ python3 assemblerv2_0.py <input_file>
+```bash
+python3 assemblerv2_0.py <input_file>
 ```
 
 ## Loading compiled code into minecraft world
 
 If you don't have one, obtain command_block by typing into minecraft console
 
-```
-$ /give @p minecraft:command_block
+```minecraft
+/give @p minecraft:command_block
 ```
 
 Place the command block anywhere in the world so that 3x3 block cube above the block is air, and paste into it command that assemblerv2_0.py script created. Then power the command block with any redstone signal
@@ -46,7 +46,7 @@ References can be used to assign a value to string. Note that references are rep
 
 These are used to point to the computer's "cache" which consists of 16 16-bit words. The syntax for register X is
 
-```
+```assembly
 reg.X
 ```
 
@@ -54,7 +54,7 @@ where X is any value from 0 to 15 representing register address.
 
 You can use register reference assigning by using following syntax
 
-```
+```assembly
 *name = X
 ```
 
@@ -62,7 +62,7 @@ where name is any string without whitespaces and X is a register address.
 
 You can then use the reference anywhere in code (even before the declaration!) by typing
 
-```
+```assembly
 *name
 ```
 
@@ -70,7 +70,7 @@ You can then use the reference anywhere in code (even before the declaration!) b
 
 The computer has 8-bit IO address bus, so it can address 256 different devices and read from or write to them. Syntax for them is
 
-```
+```assembly
 io.Y
 ```
 
@@ -78,7 +78,7 @@ where Y is any value from 0 to 255, representing IO address.
 
 You can use IO reference assigning by using following syntax
 
-```
+```assembly
 io name = Y
 ```
 
@@ -86,7 +86,7 @@ where name is any string without whitespaces and Y is an IO address.
 
 You can then use the reference anywhere in code (even before the declaration!) by typing
 
-```
+```assembly
 name
 ```
 
@@ -103,7 +103,7 @@ Currently connected devices with their addresses are:
 
 These are used to create points in program it can jump to. The simplest example is an infinite loop
 
-```
+```assembly
 name:
    go name
 ```
@@ -114,7 +114,7 @@ The assembler automatically assigns value to them, so you don't have to worry ab
 
 You can then use the reference anywhere in code (even before the declaration!) by typing
 
-```
+```assembly
 name
 ```
 
@@ -122,7 +122,7 @@ name
 
 Instructions are directly translated to machine instructions 1:1. Each instruction line equals one instruction that the computer will execute
 
-```
+```assembly
 input -> output ifcondition go goto
 ```
 
@@ -139,19 +139,19 @@ goto is instruction address to jump to if condition is true
 
 Example line of code that adds 1 to register 0 and writes the result into register 0
 
-```
+```assembly
 reg.0 + 1 -> reg.0
 ```
 
 Example line of code that performs OR on register 5 and register 12 and writes the result into IO address 128 (a. k. a. decimal display)
 
-```
+```assembly
 reg.5 | reg.12 -> io.128
 ```
 
 Example line of code that checks if register 7 is equal to register 8 by XORing and checking if result is 0. If result is 0 it jumps to instruction 0
 
-```
+```assembly
 reg.7 ^ reg.8 -> _ if0 go 0
 ```
 
