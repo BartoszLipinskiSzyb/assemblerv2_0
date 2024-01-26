@@ -10,19 +10,14 @@ def check_linting(file):
 def import_imports(filepath):
     with open(filepath, "r") as f:
         content = f.readlines()
-        result = content
-        add = 0
         for i, line in enumerate(content):
-            splitted = line.strip("\n").split(" ")
-            if splitted[0] != "use":
-                continue
-            result.pop(i + add)
-            with open(path.join(path.dirname(filepath), splitted[1]), "r") as lib:
-                for line in lib.readlines():
-                    result.insert(i + add, line)
-                    add += 1
+            splitted = line.split(" ")
+            if splitted[0] == "use":
+                with open(path.join(path.dirname(filepath), splitted[1].strip("\n")), "r") as lib:
+                    content[i] = lib.read()
+                    # todo: recursive imports
 
-    return result
+    return content
 
 
 def preprocess(lines):

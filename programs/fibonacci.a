@@ -10,3 +10,5 @@ start:
 loop:
 *a + *b -> DECIMAL_IO, *a
 *a + *b -> DECIMAL_IO, *b iftrue go loop
+use ./lib/stdio.lib
+use ./bresenham.a
