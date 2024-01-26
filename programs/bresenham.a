@@ -1,13 +1,4 @@
-// decimal display definition
-io DECIMAL = 128
-
-// pixel display definitions
-io DISP_X = 32
-io DISP_Y = 33
-io DISP_DATA = 34
-CLEAR_SCREEN = 2
-PIXEL_ON = 1
-PIXEL_OFF = 0
+use ./lib/stdio.lib
 
 // variable definitions
 *dx = 0
@@ -28,8 +19,7 @@ DECIMAL -> *y0
 DECIMAL -> *x1
 DECIMAL -> *y1
 
-// resetting display
-CLEAR_SCREEN -> DISP_DATA
+use ./lib/reset-pixel.lib
 
 plotLine:
 *x1 - *x0 -> *dx

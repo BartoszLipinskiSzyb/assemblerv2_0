@@ -7,16 +7,26 @@ import linter
 def check_linting(file):
     return linter.lint_file(file)
 
-def preprocess(filepath):
-    references = {}
+def import_imports(filepath):
+    with open(filepath, "r") as f:
+        content = f.readlines()
+        result = content
+        add = 0
+        for i, line in enumerate(content):
+            splitted = line.strip("\n").split(" ")
+            if splitted[0] != "use":
+                continue
+            result.pop(i + add)
+            with open(path.join(path.dirname(filepath), splitted[1]), "r") as lib:
+                for line in lib.readlines():
+                    result.insert(i + add, line)
+                    add += 1
 
-    lines = None
-    try:
-        with open(filepath, "r") as f:
-            lines = f.readlines()
-    except FileNotFoundError:
-        print(f"File {filepath} not found")
-        sys.exit(-1)
+    return result
+
+
+def preprocess(lines):
+    references = {}
 
     # removing trailing spaces
     lines = list(map(lambda line: line.strip(), lines))
@@ -399,13 +409,16 @@ def main():
             print("Line " + str(i + 1) + " : \n" + line.strip("\n") + "\n : bad syntax\n")
         exit(-1)
 
-    assembly = preprocess(sys.argv[1])
+    lines = import_imports(sys.argv[1])
+    assembly = preprocess(lines)
     tokenized = tokenize(assembly)
     binary = list(map(to_binary, tokenized))
     points_in_world = to_points_in_world(binary)
     minecraft_command = to_minecraft_command(points_in_world)
 
     if "-v" in sys.argv:
+        print("".join(lines))
+        print()
         print("\n".join(assembly))
         print()
         print("\n".join(map(str, tokenized)))
