@@ -28,7 +28,7 @@ def import_imports(filepath):
             splitted = line.split(" ")
             if splitted[0] == "use":
                 lib_path = path.join(path.dirname(filepath), splitted[1].strip("\n"))
-                print("opening " + lib_path)
+                # print("opening " + lib_path)
                 with open(lib_path, "r") as lib:
                     content[i] = "\n" + lib.read()
                     if "\nuse" in content[i]:
