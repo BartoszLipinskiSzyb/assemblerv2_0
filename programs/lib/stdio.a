@@ -1,3 +1,4 @@
+use ./reset-pixel.a
 // decimal display definition
 io DECIMAL = 128
 

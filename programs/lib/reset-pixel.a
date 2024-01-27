@@ -1,2 +1,3 @@
 // resetting display
 CLEAR_SCREEN -> DISP_DATA
+use ../counter.a

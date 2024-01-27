@@ -4,8 +4,22 @@ import re
 from os import path
 import linter
 
-def check_linting(file):
-    return linter.lint_file(file)
+def flatten(lst):
+    """Flattens a multi-dimensional array"""
+    flattened=[]
+    #print 'argument to main loop:', lst
+    for i in lst:
+        if  isinstance(i, list):
+            for j in i:
+                #print 'passing %r for nested lists' % j
+                if isinstance(j, list):
+                    flattened+=flatten(j)
+                else:
+                    flattened.append(j)
+        else:
+            flattened.append(i)
+    return flattened
+
 
 def import_imports(filepath):
     with open(filepath, "r") as f:
@@ -13,8 +27,12 @@ def import_imports(filepath):
         for i, line in enumerate(content):
             splitted = line.split(" ")
             if splitted[0] == "use":
-                with open(path.join(path.dirname(filepath), splitted[1].strip("\n")), "r") as lib:
-                    content[i] = lib.read()
+                lib_path = path.join(path.dirname(filepath), splitted[1].strip("\n"))
+                print("opening " + lib_path)
+                with open(lib_path, "r") as lib:
+                    content[i] = "\n" + lib.read()
+                    if "\nuse" in content[i]:
+                        content[i] = import_imports(lib_path)
                     # todo: recursive imports
 
     return content
@@ -404,7 +422,7 @@ def main():
             print("Line " + str(i + 1) + " : \n" + line.strip("\n") + "\n : bad syntax\n")
         exit(-1)
 
-    lines = import_imports(sys.argv[1])
+    lines = flatten(import_imports(sys.argv[1]))
     assembly = preprocess(lines)
     tokenized = tokenize(assembly)
     binary = list(map(to_binary, tokenized))
@@ -423,7 +441,7 @@ def main():
         print(points_in_world)
         print()
 
-    print(minecraft_command)
+    print("".join(lines))
 
 
 if __name__ == "__main__":
