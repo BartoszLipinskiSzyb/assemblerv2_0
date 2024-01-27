@@ -441,7 +441,7 @@ def main():
         print(points_in_world)
         print()
 
-    print("".join(lines))
+    print(minecraft_command)
 
 
 if __name__ == "__main__":
