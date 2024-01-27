@@ -1,7 +1,7 @@
 *a = 0
 *b = 1
 
-use ./lib/stdio.lib
+use lib/stdio.a
 
 start:
 0 -> *a
