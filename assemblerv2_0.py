@@ -4,7 +4,7 @@ import re
 from os import path
 import linter
 
-def flatten(lst):
+def flatten(lst: []) -> []:
     """Flattens a multi-dimensional array"""
     flattened=[]
     #print 'argument to main loop:', lst
@@ -22,6 +22,7 @@ def flatten(lst):
 
 
 def import_imports(filepath):
+    """Replaces import statements with code"""
     with open(filepath, "r") as f:
         content = f.readlines()
         for i, line in enumerate(content):
@@ -35,10 +36,11 @@ def import_imports(filepath):
                         content[i] = import_imports(lib_path)
                     # todo: recursive imports
 
-    return content
+    return flatten(content)
 
 
-def preprocess(lines):
+def preprocess(lines: [str]) -> [str]:
+    """Removes comments and empty lines and replaces references with values (macro)"""
     references = {}
 
     # removing trailing spaces
@@ -103,7 +105,8 @@ def preprocess(lines):
     return linesCommandsOnly
 
 
-def tokenize(assembly):
+def tokenize(assembly: [str]) -> [str]:
+    """Finds input, output, condition and goto address in instructions"""
     tokenized = []
 
     for i, line in enumerate(assembly):
@@ -153,7 +156,8 @@ def tokenize(assembly):
     return tokenized
 
 
-def bindigits(n, bits):
+def bindigits(n: int, bits: int) -> str:
+    """Converts n to binary representations string of length bits"""
     s = bin(n & int("1"*bits, 2))[2:]
     return list(map(int, list(("{0:0>%s}" % (bits)).format(s))))
 
@@ -162,7 +166,8 @@ memory_layout = json.load(open("./memory/program_memory_layout.json"))
 memory_parts = memory_layout['parts']
 
 
-def write_number_to_memory(number, layout_part, binary):
+def write_number_to_memory(number: int | str, layout_part: dict, binary: [int]):
+    """Writes a number to layout_part in binary"""
     number_size = layout_part['range'][1] - layout_part['range'][0]
     bin = bindigits(int(number), number_size)
     if layout_part['order'] == "LSB":
@@ -183,8 +188,8 @@ class bcolors:
     bold = '\033[1m'
     underline = '\033[4m'
 
-def error_msg(line, msg):
-
+def error_msg(line: str, msg: str) -> None:
+    """Presents error with line on which it occured"""
     error_line = f"In {line}: {msg}"
     print()
     print("~" * len(error_line))
@@ -195,7 +200,8 @@ def error_msg(line, msg):
     exit(-1)
 
 
-def to_binary(line):
+def to_binary(line: dict) -> [int]:
+    """Converts line to final binary representation of the instruction"""
     binary = [0 for _ in range(memory_layout["length"])]
 
     # setting goto value
@@ -363,9 +369,11 @@ def to_binary(line):
             result_condition |= 1 << bits.index(bit)
         binary = write_number_to_memory(result_condition, memory_parts['condition'], binary)
 
+    print(type(binary))
     return binary
 
-def color_binary(line):
+def color_binary(line: str) -> str:
+    """Colors binary output of to_binary function based on memory_layout"""
     line = line[::-1]
 
     def get_current_range(pos):
@@ -390,7 +398,8 @@ def color_binary(line):
     return result + bcolors.endc
 
 position_config = json.load(open("./memory/world_position_config.json"))
-def to_points_in_world(binary):
+def to_points_in_world(binary: [[int]]) -> [[int]]:
+    """Converts binary representation of instructions to corresponding point in Minecraft world where redstone torches will be placed"""
     zero_point = position_config["zero_point"]
     points = []
     for (line_idx, line) in enumerate(binary):
@@ -401,7 +410,8 @@ def to_points_in_world(binary):
     return points
 
 commands = json.load(open("./memory/minecraft_commands.json"))
-def to_minecraft_command(points):
+def to_minecraft_command(points: [[int]]) -> str:
+    """Converts points in Minecraft world to single Minecraft command that will spawn redstone torches"""
     zero_point = position_config["zero_point"]
     command = commands["start"]
     # cleaning all redstone torches
@@ -422,7 +432,7 @@ def main():
             print("Line " + str(i + 1) + " : \n" + line.strip("\n") + "\n : bad syntax\n")
         exit(-1)
 
-    lines = flatten(import_imports(sys.argv[1]))
+    lines = import_imports(sys.argv[1])
     assembly = preprocess(lines)
     tokenized = tokenize(assembly)
     binary = list(map(to_binary, tokenized))
