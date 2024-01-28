@@ -195,6 +195,16 @@ Conditions are used to test result of operation in different ways
 - !overflow - true if operation didn't result in 16-bit overflow:
     if!overflow
 
+### Import statements
+
+Imports statement are used to include code from other files in a program. They work by directly putting content of a specified file in program. That means if they contain any intructions, they will be executed
+
+```assembly
+use path/to/file.a
+```
+
+It both handles relative and absolute paths
+
 ## Examples
 
 For example programs, check out ./programs/ directory. They are already loaded into the world.

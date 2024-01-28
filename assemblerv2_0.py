@@ -197,7 +197,7 @@ def error_msg(line: str, msg: str) -> None:
     print(f"{ bcolors.header }in {line}{bcolors.endc}: {bcolors.fail}{msg}{bcolors.endc}")
     print()
     print("~" * len(error_line))
-    exit(-1)
+    sys.exit(-1)
 
 
 def to_binary(line: dict) -> [int]:
@@ -270,7 +270,7 @@ def to_binary(line: dict) -> [int]:
                         binary[memory_parts['reg_b_enable']['range'][0]] = 1
                     else:
                         error_msg(line, "both registers already selected")
-                        exit(-1)
+                        sys.exit(-1)
                 else:
                     is_reg_a_set = True
                     binary = write_number_to_memory(reg, memory_parts['reg_a'], binary)
@@ -281,7 +281,7 @@ def to_binary(line: dict) -> [int]:
                 if i - 1 == operation_idx:
                     if is_reg_b_set or is_operand_set:
                         error_msg(line, "NOT operation can only be used with one value")
-                        exit(-1)
+                        sys.exit(-1)
                     else:
                         is_reg_b_set = True
                         binary = write_number_to_memory(reg, memory_parts['reg_b'], binary)
@@ -319,7 +319,7 @@ def to_binary(line: dict) -> [int]:
         if "reg." in output:
             if is_reg_out_set:
                 error_msg(line, "can only have one output register")
-                exit(-1)
+                sys.exit(-1)
 
             value = output.replace("reg.", "")
             binary = write_number_to_memory(value, memory_parts['reg_out'], binary)
@@ -329,7 +329,7 @@ def to_binary(line: dict) -> [int]:
         elif "io." in output:
             if io_operation is not None:
                 error_msg(line, "cannot read and write to IO at the same time and can only use one IO address")
-                exit(-1)
+                sys.exit(-1)
 
             io = output.replace("io.", "")
             io_operation = "w"
@@ -430,7 +430,7 @@ def main():
     if not len(lint_errors) == 0:
         for i, line in lint_errors:
             print("Line " + str(i + 1) + " : \n" + line.strip("\n") + "\n : bad syntax\n")
-        exit(-1)
+        return -1
 
     lines = import_imports(sys.argv[1])
     assembly = preprocess(lines)
@@ -452,6 +452,7 @@ def main():
         print()
 
     print(minecraft_command)
+    return 0
 
 
 if __name__ == "__main__":
@@ -460,5 +461,5 @@ if __name__ == "__main__":
         print()
         print("options:")
         print("-v - verbose mode, show more information")
-        exit(-1)
-    main()
+        sys.exit(-1)
+    sys.exit(main())
