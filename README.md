@@ -26,6 +26,8 @@ Linux/MacOS
 python3 assemblerv2_0.py path/to/source
 ```
 
+You can place -v option at the end of the command for verbose mode
+
 ## Loading compiled code into minecraft world
 
 If you don't have one, obtain command_block by typing into minecraft console
