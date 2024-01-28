@@ -17,13 +17,13 @@ Extract file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
 Windows
 
 ```bash
-python assemblerv2_0.py <input_file>
+python assemblerv2_0.py path/to/source
 ```
 
 Linux/MacOS
 
 ```bash
-python3 assemblerv2_0.py <input_file>
+python3 assemblerv2_0.py path/to/source
 ```
 
 ## Loading compiled code into minecraft world
