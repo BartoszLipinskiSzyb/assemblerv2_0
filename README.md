@@ -197,7 +197,7 @@ Conditions are used to test result of operation in different ways
 
 ### Import statements
 
-Imports statement are used to include code from other files in a program. They work by directly putting content of a specified file in program. That means if they contain any intructions, they will be executed
+Import statement are used to include code from other files in a program. They work by directly putting content of a specified file in program. That means if they contain any intructions, they will be executed
 
 ```assembly
 use path/to/file.a
