@@ -1,4 +1,4 @@
-use ./lib/stdio.lib
+use ./lib/stdio.a
 
 // variable definitions
 *dx = 0
@@ -19,7 +19,7 @@ DECIMAL -> *y0
 DECIMAL -> *x1
 DECIMAL -> *y1
 
-use ./lib/reset-pixel.lib
+use ./lib/reset-pixel.a
 
 plotLine:
 *x1 - *x0 -> *dx

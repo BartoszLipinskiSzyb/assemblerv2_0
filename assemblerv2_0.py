@@ -32,24 +32,22 @@ def import_imports(filepath):
                 # print("opening " + lib_path)
                 with open(lib_path, "r") as lib:
                     content[i] = "\n" + lib.read()
-                    if "\nuse" in content[i]:
+                    if "use" in content[i]:
                         content[i] = import_imports(lib_path)
                     # todo: recursive imports
-
     return flatten(content)
 
 
-def preprocess(lines: list[str]) -> list[str]:
+def preprocess(lines: str) -> list[str]:
     """Removes comments and empty lines and replaces references with values (macro)"""
     references = {}
-
     # removing trailing spaces
-    lines = list(map(lambda line: line.strip(), lines))
+    lines = list(filter(lambda line: len(line) > 0, lines.split("\n")))
 
     # removing empty lines and comments
     linesStripped = []
     for i in range(len(lines)):
-        lines[i] = lines[i].strip("\n")
+        lines[i] = lines[i].strip()
         if not (lines[i] == "" or lines[i][0:2] == "//"):
             linesStripped.append(lines[i])
 
@@ -431,26 +429,35 @@ def main():
             print("Line " + str(i + 1) + " : \n" + line.strip("\n") + "\n : bad syntax\n")
         return -1
 
-    lines = import_imports(sys.argv[1])
-    assembly = preprocess(lines)
-    tokenized = tokenize(assembly)
-    binary = list(map(to_binary, tokenized))
-    points_in_world = to_points_in_world(binary)
-    minecraft_command = to_minecraft_command(points_in_world)
-
+    lines = "".join(import_imports(sys.argv[1]))
     if "-v" in sys.argv:
         print("".join(lines))
         print()
+    assembly = preprocess(lines)
+    if "-v" in sys.argv:
         print("\n".join(assembly))
         print()
+    tokenized = tokenize(assembly)
+    if "-v" in sys.argv:
         print("\n".join(map(str, tokenized)))
         print()
+    binary = list(map(to_binary, tokenized))
+    if "-v" in sys.argv:
         print("\n".join(map(color_binary, binary)))
         print()
+    points_in_world = to_points_in_world(binary)
+    if "-v" in sys.argv:
         print(points_in_world)
         print()
+    minecraft_command = to_minecraft_command(points_in_world)
+
 
     print(minecraft_command)
+
+    max_program_size = int(position_config["memory_dimensions"]["length"]) * int(position_config["memory_dimensions"]["height"])
+    if len(binary) >= max_program_size:
+        print(f"\nWarning: program exceeding maximum size of {max_program_size} instructions, based on world_position_config.json file")
+
     return 0
 
 
