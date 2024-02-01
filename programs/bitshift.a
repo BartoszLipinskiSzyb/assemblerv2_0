@@ -1,4 +1,4 @@
-io DECIMAL = 128
+use ./lib/stdio.a
 
 start_value = 2137
 *value = 0
