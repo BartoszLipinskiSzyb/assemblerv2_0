@@ -8,4 +8,3 @@ io DISP_DATA = 34
 CLEAR_SCREEN = 2
 PIXEL_ON = 1
 PIXEL_OFF = 0
-use /home/blipin/Projekty/Minecraft/Komputerv2_0/assemblerv2_0/programs/lib/reset-pixel.a
