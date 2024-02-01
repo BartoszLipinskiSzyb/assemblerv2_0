@@ -39,7 +39,7 @@ def import_imports(filepath):
     return flatten(content)
 
 
-def preprocess(lines: [str]) -> [str]:
+def preprocess(lines: list[str]) -> list[str]:
     """Removes comments and empty lines and replaces references with values (macro)"""
     references = {}
 
@@ -105,7 +105,7 @@ def preprocess(lines: [str]) -> [str]:
     return linesCommandsOnly
 
 
-def tokenize(assembly: [str]) -> [str]:
+def tokenize(assembly: list[str]) -> list[str]:
     """Finds input, output, condition and goto address in instructions"""
     tokenized = []
 
@@ -188,7 +188,7 @@ class bcolors:
     bold = '\033[1m'
     underline = '\033[4m'
 
-def error_msg(line: str, msg: str) -> None:
+def error_msg(line: str | dict, msg: str) -> None:
     """Presents error with line on which it occured"""
     error_line = f"In {line}: {msg}"
     print()
@@ -369,7 +369,6 @@ def to_binary(line: dict) -> [int]:
             result_condition |= 1 << bits.index(bit)
         binary = write_number_to_memory(result_condition, memory_parts['condition'], binary)
 
-    print(type(binary))
     return binary
 
 def color_binary(line: str) -> str:
