@@ -7,7 +7,7 @@ def verify_line(line: str) -> bool:
 
     return re.match(r"^[^\S\n]*(\S{1,} *(([+-|&^]{1}) *\S{1,} *)?-> *[^\s\,]{1,} *(, *\S{1,})? *(if(true|false|0|-|overflow|!0|!-|!overflow) {1,}go {1,}\S{1,})?)|(\/{2}.*$)|(^io {1,}\S* {0,}= {0,}\d*$)|(^\S{1,} *= *\d{1,}$)|(\S*:)|(go *\S{1,})|(use( {1,}\S{1,}){1,})$", line.strip(" \t")) is not None
 
-def lint_file(path):
+def lint_file(path: str) -> [int, str]:
     errors = []
 
     file_contents = None

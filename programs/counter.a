@@ -1,4 +1,5 @@
-io DECIMAL = 128
+use ./lib/stdio.a
+
 *value = 15
 
 0 -> *value

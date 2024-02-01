@@ -17,14 +17,16 @@ Extract file "THIS_IS_COMPUTER_WORLD.zip" into your minecraft saves folder
 Windows
 
 ```bash
-python assemblerv2_0.py <input_file>
+python assemblerv2_0.py path/to/source
 ```
 
 Linux/MacOS
 
 ```bash
-python3 assemblerv2_0.py <input_file>
+python3 assemblerv2_0.py path/to/source
 ```
+
+You can place -v option at the end of the command for verbose mode
 
 ## Loading compiled code into minecraft world
 
@@ -194,6 +196,16 @@ Conditions are used to test result of operation in different ways
     if!-
 - !overflow - true if operation didn't result in 16-bit overflow:
     if!overflow
+
+### Import statements
+
+Import statement are used to include code from other files in a program. They work by directly putting content of a specified file in program. That means if they contain any intructions, they will be executed
+
+```assembly
+use path/to/file.a
+```
+
+It both handles relative and absolute paths
 
 ## Examples
 
