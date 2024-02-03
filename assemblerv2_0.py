@@ -21,20 +21,28 @@ def flatten(lst: []) -> []:
     return flattened
 
 
-def import_imports(filepath):
+def import_imports(filepath, list_of_imports):
     """Replaces import statements with code"""
+    abs_path = path.dirname(filepath)
+    if abs_path in list_of_imports:
+        print("Import stack:")
+        for imp in list_of_imports:
+            print(imp)
+        print(f"Importing {abs_path} again would cause recursive loop")
+    list_of_imports.append(abs_path)
+
     with open(filepath, "r") as f:
         content = f.readlines()
         for i, line in enumerate(content):
             splitted = line.split(" ")
             if splitted[0] == "use":
-                lib_path = path.join(path.dirname(filepath), splitted[1].strip("\n"))
+                lib_path = path.join(abs_path, splitted[1].strip("\n"))
                 # print("opening " + lib_path)
                 with open(lib_path, "r") as lib:
                     content[i] = "\n" + lib.read()
                     if "use" in content[i]:
                         content[i] = import_imports(lib_path)
-                    # todo: recursive imports
+
     return flatten(content)
 
 
@@ -429,7 +437,8 @@ def main():
             print("Line " + str(i + 1) + " : \n" + line.strip("\n") + "\n : bad syntax\n")
         return -1
 
-    lines = "".join(import_imports(sys.argv[1]))
+    lines = "".join(import_imports(sys.argv[1], []))
+
     if "-v" in sys.argv:
         print("".join(lines))
         print()
