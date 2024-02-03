@@ -23,12 +23,15 @@ def flatten(lst: []) -> []:
 
 def import_imports(filepath, list_of_imports):
     """Replaces import statements with code"""
-    abs_path = path.dirname(filepath)
+    abs_path = path.abspath(filepath)
+    dir_name = path.dirname(abs_path)
+
     if abs_path in list_of_imports:
         print("Import stack:")
         for imp in list_of_imports:
             print(imp)
         print(f"Importing {abs_path} again would cause recursive loop")
+        sys.exit(-1)
     list_of_imports.append(abs_path)
 
     with open(filepath, "r") as f:
@@ -36,12 +39,12 @@ def import_imports(filepath, list_of_imports):
         for i, line in enumerate(content):
             splitted = line.split(" ")
             if splitted[0] == "use":
-                lib_path = path.join(abs_path, splitted[1].strip("\n"))
+                lib_path = path.join(dir_name, splitted[1].strip("\n"))
                 # print("opening " + lib_path)
                 with open(lib_path, "r") as lib:
                     content[i] = "\n" + lib.read()
                     if "use" in content[i]:
-                        content[i] = import_imports(lib_path)
+                        content[i] = import_imports(lib_path, list_of_imports)
 
     return flatten(content)
 
