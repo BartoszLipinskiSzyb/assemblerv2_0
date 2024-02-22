@@ -209,4 +209,4 @@ It both handles relative and absolute paths
 
 ## Examples
 
-For example programs, check out ./programs/ directory. They are already loaded into the world.
+For example programs, check out [programs](https://github.com/BartoszLipinskiSzyb/assemblerv2_0/tree/main/programs) directory. They are already loaded into the world.
