@@ -1,0 +1,51 @@
+use ./lib/stdio.a
+use ./lib/reset-pixel.a
+
+*x0 = 0
+*x1 = 1
+*y0 = 2
+*y1 = 3
+*x = 4
+*y = 5
+
+get_user_input:
+    3 -> *x0
+    5 -> *y0
+    8 -> *x1
+    12 -> *y1
+
+start:
+    *x0 -> *x
+    *y0 -> *y
+
+    *y -> DISP_Y
+loop1:
+    *x -> DISP_X
+    PIXEL_ON -> DISP_DATA
+
+    *x + 1 -> *x
+    *x ^ *x1 -> _ if!0 go loop1
+
+loop2:
+    *y -> DISP_Y
+    PIXEL_ON -> DISP_DATA
+
+    *y + 1 -> *y
+    *y ^ *y1 -> _ if!0 go loop2
+
+loop3:
+    *x -> DISP_X
+    PIXEL_ON -> DISP_DATA
+
+    *x - 1 -> *x
+    *x ^ *x0 -> _ if!0 go loop3
+
+loop4:
+    *y -> DISP_Y
+    PIXEL_ON -> DISP_DATA
+
+    *y - 1 -> *y
+    *y ^ *y0 -> _ if!0 go loop4
+
+halt:
+    go halt

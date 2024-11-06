@@ -1,0 +1,30 @@
+use ./lib/stdio.a
+
+*a = 0
+*b = 1
+
+*user_state = 2
+
+USER_LED_CONFIRMED -> USER_LED
+USER_LED_PROMPT -> USER_LED
+
+wait_input_a:
+    USER_LED -> *user_state
+    *user_state ^ USER_CONFIRM_ON -> _ if!0 go wait_input_a
+DECIMAL -> *a
+
+USER_LED_CONFIRMED -> USER_LED
+USER_LED_PROMPT -> USER_LED
+
+wait_input_b:
+    USER_LED -> *user_state
+    *user_state ^ USER_CONFIRM_ON -> _ if!0 go wait_input_b
+DECIMAL -> *b
+
+USER_LED_CONFIRMED -> USER_LED
+USER_LED_NONE -> USER_LED
+
+*a + *b -> DECIMAL
+
+halt:
+    go halt

@@ -1,5 +1,9 @@
 # Assembler for my custom minecraft redstone computer
 
+![whole computer](./imgs/whole-computer.png "Whole computer")
+![user input](./imgs/user-input.png "User input")
+![displays](./imgs/displays.png "Displays")
+
 ### Minecraft version: 1.15.2
 ### Python version: 3.11
 
@@ -209,4 +213,4 @@ It both handles relative and absolute paths
 
 ## Examples
 
-For example programs, check out [programs](https://github.com/BartoszLipinskiSzyb/assemblerv2_0/tree/main/programs) directory. They are already loaded into the world.
+For example programs, check out [programs](https://github.com/BartoszLipinskiSzyb/assemblerv2_0/tree/main/programs) directory. Some of them are already loaded into the world.
