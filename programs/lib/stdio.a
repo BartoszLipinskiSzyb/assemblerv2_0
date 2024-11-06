@@ -1,10 +1,18 @@
 // decimal display definition
 io DECIMAL = 128
 
+// user prompt leds definitions
+io USER_LED = 129
+USER_LED_NONE = 0
+USER_LED_PROMPT = 1
+USER_LED_CONFIRMED = 2
+USER_CONFIRM_OFF = 0
+USER_CONFIRM_ON = 1
+
 // pixel display definitions
 io DISP_X = 32
 io DISP_Y = 33
 io DISP_DATA = 34
-CLEAR_SCREEN = 2
-PIXEL_ON = 1
 PIXEL_OFF = 0
+PIXEL_ON = 1
+CLEAR_SCREEN = 2

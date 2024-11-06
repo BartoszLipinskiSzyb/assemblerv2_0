@@ -1,0 +1,7 @@
+use ./lib/stdio.a
+
+*temp = 0
+
+loop:
+    DECIMAL -> *temp
+    *temp -> DECIMAL iftrue go loop
